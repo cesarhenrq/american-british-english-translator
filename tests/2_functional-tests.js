@@ -16,7 +16,10 @@ suite("Functional Tests", () => {
       })
       .end((err, res) => {
         assert.equal(res.status, 200);
-        assert.equal(res.body.translation, "Mangoes are my favourite fruit.");
+        assert.equal(
+          res.body.translation,
+          `Mangoes are my <span class="highlight">favourite</span> fruit.`
+        );
         done();
       });
   });
@@ -76,7 +79,7 @@ suite("Functional Tests", () => {
       .send({ text: "Hello", locale: "american-to-british" })
       .end((err, res) => {
         assert.equal(res.status, 200);
-        assert.equal(res.body.translation, "Hello");
+        assert.equal(res.body.translation, "Everything looks good to me!");
         done();
       });
   });

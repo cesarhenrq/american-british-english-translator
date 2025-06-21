@@ -14,10 +14,20 @@ class Translator {
     }
   }
 
+  translateWithHighlight(text, locale) {
+    if (locale === "american-to-british") {
+      return this.americanToBritishWithHighlight(text);
+    } else if (locale === "british-to-american") {
+      return this.britishToAmericanWithHighlight(text);
+    } else {
+      return text;
+    }
+  }
+
   americanToBritish(text) {
     let translated = text;
 
-    translated = translated.replace(/[1-9]:[0-9]{2}/g, (match) => {
+    translated = translated.replace(/([1-9]|1[0-2]):[0-5][0-9]/g, (match) => {
       return match.replace(":", ".");
     });
 
@@ -29,24 +39,22 @@ class Translator {
     );
 
     translated = translated.replace(titleRegex, (match) => {
-      return this.matchCase(
-        match,
-        americanToBritishTitles[match.toLowerCase()]
-      );
+      const britishTitle = americanToBritishTitles[match.toLowerCase()];
+      return this.matchCase(match, britishTitle);
     });
 
     Object.entries(americanToBritishSpelling).forEach(([am, br]) => {
       const regex = new RegExp(`\\b${am}\\b`, "gi");
-      translated = translated.replace(regex, (match) =>
-        this.matchCase(match, br)
-      );
+      translated = translated.replace(regex, (match) => {
+        return this.matchCase(match, br);
+      });
     });
 
     Object.entries(americanOnly).forEach(([am, br]) => {
       const regex = new RegExp(`\\b${am}\\b`, "gi");
-      translated = translated.replace(regex, (match) =>
-        this.matchCase(match, br)
-      );
+      translated = translated.replace(regex, (match) => {
+        return this.matchCase(match, br);
+      });
     });
 
     return translated;
@@ -55,7 +63,7 @@ class Translator {
   britishToAmerican(text) {
     let translated = text;
 
-    translated = translated.replace(/[1-9]\.[0-9]{2}/g, (match) => {
+    translated = translated.replace(/([1-9]|1[0-2])\.[0-5][0-9]/g, (match) => {
       return match.replace(".", ":");
     });
 
@@ -69,26 +77,114 @@ class Translator {
 
     Object.entries(britishToAmericanTitles).forEach(([br, am]) => {
       const regex = new RegExp(`\\b${br}\\b`, "gi");
-      translated = translated.replace(regex, (match) =>
-        this.matchCase(match, am)
-      );
+      translated = translated.replace(regex, (match) => {
+        return this.matchCase(match, am);
+      });
     });
 
     Object.entries(britishToAmericanSpelling).forEach(([br, am]) => {
       const regex = new RegExp(`\\b${br}\\b`, "gi");
-      translated = translated.replace(regex, (match) =>
-        this.matchCase(match, am)
-      );
+      translated = translated.replace(regex, (match) => {
+        return this.matchCase(match, am);
+      });
     });
 
     Object.entries(britishOnly).forEach(([br, am]) => {
       const regex = new RegExp(`\\b${br}\\b`, "gi");
-      translated = translated.replace(regex, (match) =>
-        this.matchCase(match, am)
-      );
+      translated = translated.replace(regex, (match) => {
+        return this.matchCase(match, am);
+      });
     });
 
     return translated;
+  }
+
+  americanToBritishWithHighlight(text) {
+    let translated = text;
+    let hasTranslation = false;
+
+    translated = translated.replace(/([1-9]|1[0-2]):[0-5][0-9]/g, (match) => {
+      hasTranslation = true;
+      return `<span class="highlight">${match.replace(":", ".")}</span>`;
+    });
+
+    const titleRegex = new RegExp(
+      Object.keys(americanToBritishTitles)
+        .map((title) => title.replace(".", "\\."))
+        .join("|"),
+      "gi"
+    );
+
+    translated = translated.replace(titleRegex, (match) => {
+      hasTranslation = true;
+      const britishTitle = americanToBritishTitles[match.toLowerCase()];
+      return `<span class="highlight">${this.matchCase(
+        match,
+        britishTitle
+      )}</span>`;
+    });
+
+    Object.entries(americanToBritishSpelling).forEach(([am, br]) => {
+      const regex = new RegExp(`\\b${am}\\b`, "gi");
+      translated = translated.replace(regex, (match) => {
+        hasTranslation = true;
+        return `<span class="highlight">${this.matchCase(match, br)}</span>`;
+      });
+    });
+
+    Object.entries(americanOnly).forEach(([am, br]) => {
+      const regex = new RegExp(`\\b${am}\\b`, "gi");
+      translated = translated.replace(regex, (match) => {
+        hasTranslation = true;
+        return `<span class="highlight">${this.matchCase(match, br)}</span>`;
+      });
+    });
+
+    return hasTranslation ? translated : "Everything looks good to me!";
+  }
+
+  britishToAmericanWithHighlight(text) {
+    let translated = text;
+    let hasTranslation = false;
+
+    translated = translated.replace(/([1-9]|1[0-2])\.[0-5][0-9]/g, (match) => {
+      hasTranslation = true;
+      return `<span class="highlight">${match.replace(".", ":")}</span>`;
+    });
+
+    const britishToAmericanSpelling = Object.fromEntries(
+      Object.entries(americanToBritishSpelling).map(([am, br]) => [br, am])
+    );
+
+    const britishToAmericanTitles = Object.fromEntries(
+      Object.entries(americanToBritishTitles).map(([am, br]) => [br, am])
+    );
+
+    Object.entries(britishToAmericanTitles).forEach(([br, am]) => {
+      const regex = new RegExp(`\\b${br}\\b`, "gi");
+      translated = translated.replace(regex, (match) => {
+        hasTranslation = true;
+        return `<span class="highlight">${this.matchCase(match, am)}</span>`;
+      });
+    });
+
+    Object.entries(britishToAmericanSpelling).forEach(([br, am]) => {
+      const regex = new RegExp(`\\b${br}\\b`, "gi");
+      translated = translated.replace(regex, (match) => {
+        hasTranslation = true;
+        return `<span class="highlight">${this.matchCase(match, am)}</span>`;
+      });
+    });
+
+    Object.entries(britishOnly).forEach(([br, am]) => {
+      const regex = new RegExp(`\\b${br}\\b`, "gi");
+      translated = translated.replace(regex, (match) => {
+        hasTranslation = true;
+        return `<span class="highlight">${this.matchCase(match, am)}</span>`;
+      });
+    });
+
+    return hasTranslation ? translated : "Everything looks good to me!";
   }
 
   matchCase(source, target) {

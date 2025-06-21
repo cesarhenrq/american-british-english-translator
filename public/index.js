@@ -22,22 +22,8 @@ const translateHandler = async () => {
     return;
   }
 
-  const highlighted = highlight(parsed.text, parsed.translation);
-
-  translatedArea.innerHTML = highlighted;
+  translatedArea.innerHTML = parsed.translation;
   return;
-};
-
-const highlight = (text, translation) => {
-  const textArray = text.split(" ");
-  const translationArray = translation.split(" ");
-  const highlighted = translationArray.map((word, index) => {
-    if (word !== textArray[index]) {
-      return `<span class="highlight">${word}</span>`;
-    }
-    return word;
-  });
-  return highlighted.join(" ");
 };
 
 document

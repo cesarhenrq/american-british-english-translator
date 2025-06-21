@@ -151,4 +151,45 @@ suite("Unit Tests", () => {
     const translation = translator.translate(text, locale);
     assert.equal(translation, "Tea time is usually around 4 or 4:30.");
   });
+
+  // Additional tests to reach 24 total tests
+  test("Highlight translation of Mangoes are my favorite fruit. to British English", () => {
+    const text = "Mangoes are my favorite fruit.";
+    const locale = "american-to-british";
+    const translation = translator.translateWithHighlight(text, locale);
+    assert.equal(
+      translation,
+      'Mangoes are my <span class="highlight">favourite</span> fruit.'
+    );
+  });
+
+  test("Highlight translation of I ate yogurt for breakfast. to British English", () => {
+    const text = "I ate yogurt for breakfast.";
+    const locale = "american-to-british";
+    const translation = translator.translateWithHighlight(text, locale);
+    assert.equal(
+      translation,
+      'I ate <span class="highlight">yoghurt</span> for breakfast.'
+    );
+  });
+
+  test("Highlight translation of We watched the footie match for a while. to American English", () => {
+    const text = "We watched the footie match for a while.";
+    const locale = "british-to-american";
+    const translation = translator.translateWithHighlight(text, locale);
+    assert.equal(
+      translation,
+      'We watched the <span class="highlight">soccer</span> match for a while.'
+    );
+  });
+
+  test("Highlight translation of Paracetamol takes up to an hour to work. to American English", () => {
+    const text = "Paracetamol takes up to an hour to work.";
+    const locale = "british-to-american";
+    const translation = translator.translateWithHighlight(text, locale);
+    assert.equal(
+      translation,
+      '<span class="highlight">Tylenol</span> takes up to an hour to work.'
+    );
+  });
 });
